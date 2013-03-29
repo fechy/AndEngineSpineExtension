@@ -2,6 +2,8 @@ package com.spine;
 
 import java.util.LinkedList;
 
+import org.andengine.util.debug.Debug;
+
 import com.MathUtils;
 
 public class Animation {

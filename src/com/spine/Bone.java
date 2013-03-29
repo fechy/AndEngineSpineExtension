@@ -1,5 +1,7 @@
 package com.spine;
 
+import org.andengine.entity.primitive.Line;
+
 import com.MathUtils;
 import com.gdx.utils.Matrix3;
 
@@ -14,6 +16,8 @@ public class Bone {
 	float m10, m11, worldY; // c d y
 	float worldRotation;
 	float worldScaleX, worldScaleY;
+	
+	Line boneDebug;
 
 	/** @param parent May be null. */
 	public Bone (BoneData data, Bone parent) {

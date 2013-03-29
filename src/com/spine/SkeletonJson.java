@@ -35,6 +35,7 @@ public class SkeletonJson {
 	private LinkedList<TextureRegion> regions = new LinkedList<TextureRegion>();
 	
 	private AtlasParser atlasParser;
+	private SkeletonData skeletonData;
 
 	public SkeletonJson (AtlasParser pAtlasParser, Context context) {
 		atlasParser = pAtlasParser;
@@ -82,7 +83,7 @@ public class SkeletonJson {
 	public SkeletonData readSkeletonData (InputStream file) {
 		if (file == null) throw new IllegalArgumentException("file cannot be null.");
 		
-		SkeletonData skeletonData = new SkeletonData();
+		skeletonData = new SkeletonData();
 		
 		try {
 			JSONObject json = streamToJson(file);
@@ -111,7 +112,7 @@ public class SkeletonJson {
 			JSONArray slots = json.getJSONArray("slots");
 			if (slots != null) {
 				for(int i = 0; i < slots.length(); i++) {
-					JSONObject slotMap = (JSONObject) slots.get(i);
+					JSONObject slotMap = slots.getJSONObject(i);
 					
 					String slotName = getString(slotMap, "name", "");
 					String boneName = getString(slotMap, "bone", "");
@@ -135,7 +136,7 @@ public class SkeletonJson {
 				JSONArray keys = skins.names();
 				for(int i=0; i < keys.length(); i++) {
 					String key = (String) keys.get(i);
-					JSONObject skinDatas = (JSONObject) skins.getJSONObject(key);
+					JSONObject skinDatas = skins.getJSONObject(key);
 					
 					Skin skin = new Skin(key);
 					JSONArray pAtt= skinDatas.names();
@@ -233,7 +234,9 @@ public class SkeletonJson {
 			for(int i = 0; i < pval.length(); i++) {
 				String boneName = pval.getString(i);
 				
-				JSONObject pData = (JSONObject) map.get(boneName);
+				int boneIndex = skeletonData.findBoneIndex(boneName);
+				
+				JSONObject pData = map.getJSONObject(boneName);
 				
 				JSONArray pAnim = pData.names();
 				for(int j=0; j < pAnim.length(); j++)
@@ -242,16 +245,17 @@ public class SkeletonJson {
 					JSONArray pAnimData = pData.getJSONArray(timelineName);
 					if (timelineName.equals(TIMELINE_ROTATE)) {
 						RotateTimeline timeline = new RotateTimeline(pAnimData.length());
-						timeline.setBoneIndex(j);
+						timeline.setBoneIndex(boneIndex);
 
 						int keyframeIndex = 0;
-						for (int g=0; g < pAnimData.length(); g++) {
-							JSONObject valueMap = (JSONObject) pAnimData.get(g);
+						while(!pAnimData.isNull(keyframeIndex)) {
+							JSONObject valueMap = pAnimData.getJSONObject(keyframeIndex);
 							float time = getFloat(valueMap, "time", 0);
 							timeline.setKeyframe(keyframeIndex, time, getFloat(valueMap, "angle", 0));
 							readCurve(timeline, keyframeIndex, valueMap);
 							keyframeIndex++;
 						}
+						
 						timelines.add(timeline);
 						duration = Math.max(duration, timeline.getDuration());
 
@@ -267,8 +271,8 @@ public class SkeletonJson {
 						timeline.setBoneIndex(j);
 
 						int keyframeIndex = 0;
-						for (int g=0; g < pAnimData.length(); g++) {
-							JSONObject valueMap = (JSONObject) pAnimData.get(g);
+						while(!pAnimData.isNull(keyframeIndex)) {
+							JSONObject valueMap = pAnimData.getJSONObject(keyframeIndex);
 							float time = getFloat(valueMap, "time", 0);
 							Float x = getFloat(valueMap, "x", 0), y = getFloat(valueMap, "y", 0);
 							timeline.setKeyframe(keyframeIndex, time, x == null ? 0 : (x * timelineScale), y == null ? 0
@@ -276,6 +280,7 @@ public class SkeletonJson {
 							readCurve(timeline, keyframeIndex, valueMap);
 							keyframeIndex++;
 						}
+						
 						timelines.add(timeline);
 						duration = Math.max(duration, timeline.getDuration());
 

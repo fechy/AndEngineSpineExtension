@@ -2,6 +2,7 @@ package com.spine;
 
 import java.util.LinkedList;
 
+import org.andengine.entity.IEntity;
 import org.andengine.entity.primitive.Line;
 import org.andengine.entity.primitive.Rectangle;
 import org.andengine.entity.scene.Scene;
@@ -112,18 +113,33 @@ public class Skeleton {
 		for (int i = 0, n = bones.size(); i < n; i++) {
 			Bone bone = bones.get(i);
 			if (bone.parent == null) continue;
+			if(bone.boneDebug == null) {
+				Line line = new Line(bone.worldX, bone.worldY, 0, 0, vertex);
+				line.setColor(Color.RED);
+				scene.attachChild(line);
+				bone.boneDebug = line;
+			}
+			
 			float x = bone.data.length * bone.m00 + bone.worldX;
 			float y = bone.data.length * bone.m10 + bone.worldY;
-			Line line = new Line(bone.worldX, bone.worldY, x, y, vertex);
-			line.setColor(Color.RED);
-			scene.attachChild(line);
+			
+			bone.boneDebug.setPosition(bone.worldX, bone.worldY, x, y);
 		}
 		
 		for (int i = 0, n = bones.size(); i < n; i++) {
 			Bone bone = bones.get(i);
-			Rectangle rect = new Rectangle(bone.worldX, bone.worldY, 3, 3, vertex);
-			rect.setColor(Color.GREEN);
-			scene.attachChild(rect);
+			if(bone.boneDebug != null) {
+				IEntity point = bone.boneDebug.getChildByTag(15);
+				if(point == null) {
+					Rectangle rect = new Rectangle(bone.worldX, bone.worldY, 3, 3, vertex);
+					bone.boneDebug.attachChild(rect);
+					rect.setTag(15);
+					rect.setColor(Color.GREEN);
+					point = rect;
+				}
+				
+				point.setPosition(bone.worldX, bone.worldY);
+			}
 		}
 	}
 
