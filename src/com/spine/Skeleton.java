@@ -2,7 +2,11 @@ package com.spine;
 
 import java.util.LinkedList;
 
+import org.andengine.entity.primitive.Line;
+import org.andengine.entity.primitive.Rectangle;
+import org.andengine.entity.scene.Scene;
 import org.andengine.entity.sprite.batch.SpriteBatch;
+import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.color.Color;
 
 public class Skeleton {
@@ -104,27 +108,24 @@ public class Skeleton {
 		
 	}
 
-	/*public void drawDebug (ShapeRenderer renderer) {
-		renderer.setColor(Color.RED);
-		renderer.begin(ShapeType.Line);
+	public void drawDebug (Scene scene, VertexBufferObjectManager vertex) {
 		for (int i = 0, n = bones.size(); i < n; i++) {
 			Bone bone = bones.get(i);
 			if (bone.parent == null) continue;
 			float x = bone.data.length * bone.m00 + bone.worldX;
 			float y = bone.data.length * bone.m10 + bone.worldY;
-			renderer.line(bone.worldX, bone.worldY, x, y);
+			Line line = new Line(bone.worldX, bone.worldY, x, y, vertex);
+			line.setColor(Color.RED);
+			scene.attachChild(line);
 		}
-		renderer.end();
-
-		renderer.setColor(Color.GREEN);
-		renderer.begin(ShapeType.Filled);
+		
 		for (int i = 0, n = bones.size(); i < n; i++) {
 			Bone bone = bones.get(i);
-			renderer.setColor(Color.GREEN);
-			renderer.circle(bone.worldX, bone.worldY, 3);
+			Rectangle rect = new Rectangle(bone.worldX, bone.worldY, 3, 3, vertex);
+			rect.setColor(Color.GREEN);
+			scene.attachChild(rect);
 		}
-		renderer.end();
-	}*/
+	}
 
 	public SkeletonData getData () {
 		return data;

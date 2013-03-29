@@ -77,11 +77,13 @@ public class GameActivity extends SimpleBaseGameActivity implements IUpdateHandl
 	{
 		Scene pScene = new Scene();
 		
-		pScene.registerUpdateHandler(this);
+		//pScene.registerUpdateHandler(this);
 		
 		pScene.setBackground(new Background(Color.CYAN));
 		
-		batch = new SpriteBatch(atlasParser.getAtlas(), 50, this.getVertexBufferObjectManager());
+		skeleton.drawDebug(pScene, this.getVertexBufferObjectManager());
+		
+		//batch = new SpriteBatch(atlasParser.getAtlas(), 50, this.getVertexBufferObjectManager());
 		
 		//skeleton.draw(batch);
 		
@@ -96,10 +98,10 @@ public class GameActivity extends SimpleBaseGameActivity implements IUpdateHandl
 		
 		//batch.draw(pTextureRegion, pX, pY, pWidth, pHeight, pRotation, pScaleX, pScaleY, pRed, pGreen, pBlue, pAlpha);
 		
-		batch.submit();
+		/*batch.submit();
 		batch.setPosition(0, 0);
 		
-		pScene.attachChild(batch);
+		pScene.attachChild(batch);*/
 		
 		return pScene;
 	}
